@@ -32,6 +32,7 @@ phx_framework/
 │   ├── PHXFramework.php
 │   ├── PHXLayout.php
 │   ├── PHXLogger.php
+│   ├── PHXORM.php
 │   └── PHXRouter.php
 │  
 ├── public/
@@ -97,4 +98,111 @@ private static function verifyCsrfToken() {
 ```php
 use Core\PHXLogger;
 PHXLogger::displayError('Error Message');
+```
+
+### Use ORM
+
+| **Method**                      | **Description**                                                                                                                                                             | **Usage Example**                                                                                                                                 |
+|----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| `getTableName()`                 | Retrieves the name of the table associated with the current class, based on the class name.                                                                                  | `$model->getTableName();`                                                                                                                          |
+| `save()`                         | Saves the current data (attributes) to the associated table.                                                                                                               | `$model->save();`                                                                                                                                 |
+| `all()`                          | Retrieves all records from the associated table.                                                                                                                             | `$model->all();`                                                                                                                                  |
+| `find($id)`                      | Retrieves a record by its ID.                                                                                                                                                 | `$model->find(1);`                                                                                                                                 |
+| `setAttributes($attributes)`     | Sets the attributes to be saved or updated in the table.                                                                                                                     | `$model->setAttributes(['name' => 'John', 'email' => 'john@example.com']);`                                                                   |
+| `update($id, $attributes)`       | Updates the record identified by its ID with the specified attributes.                                                                                                       | `$model->update(1, ['name' => 'John Doe']);`                                                                                                    |
+| `delete($id)`                    | Deletes the record identified by its ID.                                                                                                                                      | `$model->delete(1);`                                                                                                                             |
+| `where($conditions)`             | Executes a query with a `WHERE` condition (e.g., multiple conditions with `AND`).                                                                                           | `$model->where(['name' => 'John', 'age' => 30]);`                                                                                              |
+| `join($table, $onCondition, $type)` | Executes a `JOIN` query with the specified table and on-condition. Optionally supports different join types (`INNER`, `LEFT`, etc.).                                           | `$model->join('posts', 'users.id = posts.user_id', 'INNER');`                                                                                   |
+| `groupBy($columns)`              | Executes a `GROUP BY` query on the specified columns.                                                                                                                        | `$model->groupBy(['category']);`                                                                                                                 |
+| `having($groupByColumns, $havingConditions)` | Executes a `HAVING` query after a `GROUP BY`, with the specified conditions.                                                                                                   | `$model->having(['category'], ['COUNT(*) > 5']);`                                                                                              |
+| `orderBy($columns, $direction)`  | Executes an `ORDER BY` query on the specified columns, sorting in ascending (`ASC`) or descending (`DESC`) order.                                                           | `$model->orderBy(['name'], 'ASC');`                                                                                                              |
+| `limit($limit, $offset)`         | Executes a query with a `LIMIT` and `OFFSET` to restrict the number of rows returned.                                                                                       | `$model->limit(10, 20);`                                                                                                                         |
+| `distinct($columns)`             | Executes a `SELECT DISTINCT` query on the specified columns.                                                                                                                | `$model->distinct(['name']);`                                                                                                                    |
+| `count($column)`                 | Executes a `COUNT` query to count the number of records, optionally for a specific column.                                                                                   | `$model->count();` (counts all rows) or `$model->count('name');` (counts distinct values of 'name')                                              |
+| `raw($sql, $params)`             | Executes a raw SQL query with the provided parameters and returns the result.                                                                                               | `$model->raw('SELECT * FROM users WHERE age > :age', ['age' => 25]);`                                                                          |
+
+### Example Usage for Common Tasks
+
+**Insert New Record**:  
+  ```php
+  $user = new User();
+  $user->setAttributes(['name' => 'John Doe', 'email' => 'john@example.com']);
+  $user->save();
+  ```
+
+**Fetch All Records**:  
+  ```php
+  $users = $user->all();
+  ```
+
+**Find a Record by ID**:  
+  ```php
+  $user = $user->find(1);
+  ```
+
+**Update a Record**:  
+  ```php
+  $user->update(1, ['name' => 'John Doe Updated']);
+  ```
+
+**Delete a Record**:  
+  ```php
+  $user->delete(1);
+  ```
+
+**Run a Custom Query with WHERE**:  
+  ```php
+  $users = $user->where(['name' => 'John', 'age' => 30]);
+  ```
+
+**Run a JOIN Query**:  
+  ```php
+  $usersWithPosts = $user->join('posts', 'users.id = posts.user_id', 'LEFT');
+  ```
+
+**Group by Column**:  
+  ```php
+  $groupedUsers = $user->groupBy(['age']);
+  ```
+
+**Count Records**:  
+  ```php
+  $userCount = $user->count();
+  ```
+  
+**Example Get All Data**
+
+```php
+<?php
+namespace Src\Pages;
+
+use Core\PHXController;
+use Src\App;
+use Core\PHXORM;
+
+class Examples {
+    
+	public function GetAll() {
+		return implode('', array_map(fn($fruit) =>"
+		[li]
+			[span]{$fruit['title']}[/span] 
+			[span]{$fruit['price']}[/span]
+		[/li]
+		", (new class extends PHXORM {
+			protected $table = 'fruits';
+			protected $primaryKey = 'id';
+			protected $attributes = ['title', 'price'];
+		})->GetAll()));
+	}
+
+    public function index() {
+        $fruitList = $this->GetAll();
+		
+        PHXController::render("
+            [div]
+                $fruitList
+            [/div]
+        ");
+    }
+}
 ```

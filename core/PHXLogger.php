@@ -19,7 +19,7 @@ class PHXLogger {
             <title>Error</title>
             <script src="https://cdn.tailwindcss.com"></script>
         </head>
-        <body class="bg-neutral-800 text-neutral-200 h-screen w-full flex flex-col justify-center items-center p-4">
+        <body class="bg-neutral-800 text-neutral-200 h-screen gap-4 w-full flex flex-col justify-center items-center p-4">
             <div class="w-full flex flex-col max-w-6xl mx-auto rounded-md">
                 <div class="flex">
                     <div class="text-red-600 text-2xl font-bold px-4 py-2 rounded-t-md bg-black border-b border-neutral-900">
