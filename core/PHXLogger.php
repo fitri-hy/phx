@@ -1,8 +1,17 @@
 <?php
 namespace Core;
 
+use Dotenv\Dotenv;
+
 class PHXLogger {
     public static function displayError(string $message): void {
+		
+		if (!isset($_ENV['LOGGER_AI'])) {
+            $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+            $dotenv->load();
+        }
+        $apiKey = $_ENV['LOGGER_AI'];
+		
         echo '
         <!DOCTYPE html>
         <html>
@@ -58,7 +67,7 @@ class PHXLogger {
                     }]
                 };
                 
-                fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyB7Jzs0kB9KW90d9gwHCKIE27mQfEzGa4w", {
+                fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' . $apiKey . '", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"

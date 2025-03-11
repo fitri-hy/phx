@@ -1,8 +1,16 @@
 <?php
 namespace Core;
 
+use Dotenv\Dotenv;
+
 class PHXFramework {
     public static function render($Children) {
+		if (!isset($_ENV['USE_MINIFY'])) {
+            $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+            $dotenv->load();
+        }
+		 $useMinify = filter_var($_ENV['USE_MINIFY'], FILTER_VALIDATE_BOOLEAN);
+		
         $render = trim($Children);
         $render = preg_replace('/\[!PHX html\]/', '<!DOCTYPE html>', $render);
         $render = preg_replace('/<!--.*?-->/', '', $render);
@@ -12,7 +20,10 @@ class PHXFramework {
             return "<style>" . trim($matches[1]) . "</style>";
         }, $render);
         $render = self::replaceUrls($render);
-        // $render = self::minimizeHTML($render);
+		
+		if ($useMinify) {
+            $render = self::minimizeHTML($render);
+        }
         
         return $render;
     }

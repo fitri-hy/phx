@@ -2,29 +2,29 @@
 namespace Src;
 
 use Core\PHXFramework;
+use Core\PHXController;
 
-class App {
-    public static function App($Children) {
+class App extends PHXController {
+    public static function App(string $Children) {
+        $props = self::Props();
+
         echo PHXFramework::render("
             [!PHX html]
             [html]
             [head]
-                [title] Welcome to PHX! [/title]
+				[meta charset:'UTF-8']
                 [meta name:'viewport' content:'width=device-width, initial-scale=1.0']
-                [link rel:'icon' href:'/images/logo/favicon.ico' type:'image/x-icon']
-                [link rel:'shortcut icon' href:'/images/logo/favicon.ico' type:'image/x-icon']
-                [style]
-                    .center {
-                        text-align: center;
-                        font-family: Arial, sans-serif;
-                    }
-                [/style]
-                [script src:'https@cdn.tailwindcss.com'][/script]
+                [title] {$props['meta_title']} [/title]
+                [meta name:'description' content:'{$props['meta_description']}']
+                [link rel:'icon' href:'/images/logo/favicon.ico']
+                [link rel:'stylesheet' href:'/css/style.css']
+				[link rel:'manifest' href='/manifest.json']
             [/head]
-            [body]
-                $Children
-                http@cdn.tailwindcss.com
-            [/body]
+            [body] 
+				$Children
+				[[PWA]]
+				[script src='/js/app.js'][/script]
+			[/body]
             [/html]
         ");
     }
