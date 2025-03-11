@@ -132,29 +132,26 @@ use Src\App;
 use Core\PHXORM;
 
 class Examples {
-    
-	public function GetAll() {
-		return implode('', array_map(fn($fruit) =>"
-		[li]
-			[span]{$fruit['title']}[/span] 
-			[span]{$fruit['price']}[/span]
-		[/li]
-		", (new class extends PHXORM {
-			protected $table = 'fruits';
-			protected $primaryKey = 'id';
-			protected $attributes = ['title', 'price'];
-		})->GetAll()));
-	}
-
-    public function index() {
-        $fruitList = $this->GetAll();
-		
-        PHXController::render("
-            [div]
-                $fruitList
-            [/div]
-        ");
-    }
+  public function GetAll() {
+    return implode('', array_map(fn($fruit) =>"
+      [li]
+        [span]{$fruit['title']}[/span] 
+        [span]{$fruit['price']}[/span]
+      [/li]
+    ", (new class extends PHXORM {
+      protected $table = 'fruits';
+      protected $primaryKey = 'id';
+      protected $attributes = ['title', 'price'];
+    })->GetAll()));
+  }
+  public function index() {
+    $fruitList = $this->GetAll();
+    PHXController::render("
+      [div]
+        $fruitList
+      [/div]
+    ");
+  }
 }
 ```
 
