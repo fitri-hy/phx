@@ -123,6 +123,43 @@ PHXLogger::displayError('Error Message');
 
 ### Example Usage for Common Tasks
 
+**Example Get All Data**
+
+```php
+<?php
+namespace Src\Pages;
+
+use Core\PHXController;
+use Src\App;
+use Core\PHXORM;
+
+class Examples {
+    
+	public function GetAll() {
+		return implode('', array_map(fn($fruit) =>"
+		[li]
+			[span]{$fruit['title']}[/span] 
+			[span]{$fruit['price']}[/span]
+		[/li]
+		", (new class extends PHXORM {
+			protected $table = 'fruits';
+			protected $primaryKey = 'id';
+			protected $attributes = ['title', 'price'];
+		})->GetAll()));
+	}
+
+    public function index() {
+        $fruitList = $this->GetAll();
+		
+        PHXController::render("
+            [div]
+                $fruitList
+            [/div]
+        ");
+    }
+}
+```
+
 **Insert New Record**:  
   ```php
   $user = new User();
@@ -169,40 +206,3 @@ PHXLogger::displayError('Error Message');
   ```php
   $userCount = $user->count();
   ```
-  
-**Example Get All Data**
-
-```php
-<?php
-namespace Src\Pages;
-
-use Core\PHXController;
-use Src\App;
-use Core\PHXORM;
-
-class Examples {
-    
-	public function GetAll() {
-		return implode('', array_map(fn($fruit) =>"
-		[li]
-			[span]{$fruit['title']}[/span] 
-			[span]{$fruit['price']}[/span]
-		[/li]
-		", (new class extends PHXORM {
-			protected $table = 'fruits';
-			protected $primaryKey = 'id';
-			protected $attributes = ['title', 'price'];
-		})->GetAll()));
-	}
-
-    public function index() {
-        $fruitList = $this->GetAll();
-		
-        PHXController::render("
-            [div]
-                $fruitList
-            [/div]
-        ");
-    }
-}
-```
