@@ -123,8 +123,6 @@ PHXLogger::displayError('Error Message');
 
 ### Example Usage for Common Tasks
 
-**Example Get All Data**
-
 ```php
 <?php
 namespace Src\Pages;
