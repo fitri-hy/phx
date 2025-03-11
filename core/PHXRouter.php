@@ -25,13 +25,19 @@ class PHXRouter {
     private static function registerRoute($requestMethod, $route, $controller, $method) {
         self::$routes[] = [
             'method' => $requestMethod,
-            'uri' => filter_var($route, FILTER_SANITIZE_URL),
+            'uri' => self::sanitizeRoute($route),
             'controller' => $controller,
             'action' => $method
         ];
     }
 
+    private static function sanitizeRoute($route) {
+        return filter_var($route, FILTER_SANITIZE_URL);
+    }
+
     public static function Route() {
+        self::setCORSHeaders();
+
         $requestUri = strtok($_SERVER["REQUEST_URI"], '?');
         $requestMethod = $_SERVER['REQUEST_METHOD'];
 
@@ -46,7 +52,7 @@ class PHXRouter {
                     self::showNotFound();
                 }
 
-                if (!in_array($requestMethod, ['GET']) && !self::verifyCsrfToken()) {
+                if (!self::isCsrfValid($requestMethod)) {
                     self::showNotFound();
                 }
 
@@ -58,8 +64,8 @@ class PHXRouter {
         self::showNotFound();
     }
 
-    private static function verifyCsrfToken() {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') return true;
+    private static function isCsrfValid($requestMethod) {
+        if ($requestMethod === 'GET') return true;
 
         $headers = getallheaders();
         $csrfToken = isset($headers['X-CSRF-TOKEN']) ? $headers['X-CSRF-TOKEN'] : null;
@@ -71,5 +77,22 @@ class PHXRouter {
         http_response_code(404);
         (new NotFoundPage())->index();
         exit;
+    }
+
+    public static function setSecurityHeaders() {
+        header('X-Content-Type-Options: nosniff');
+        header('X-XSS-Protection: 1; mode=block');
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
+    }
+
+    public static function setCORSHeaders() {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+        header('Access-Control-Allow-Headers: X-Requested-With, Content-Type, Authorization, X-CSRF-TOKEN');
+
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(200);
+            exit;
+        }
     }
 }
