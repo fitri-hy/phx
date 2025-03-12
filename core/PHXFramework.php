@@ -11,14 +11,16 @@ class PHXFramework {
         }
 		$useMinify = filter_var($_ENV['USE_MINIFY'], FILTER_VALIDATE_BOOLEAN);
 		$usePHXEngine = filter_var($_ENV['USE_PHX_ENGINE'], FILTER_VALIDATE_BOOLEAN);
+		
+		$Children = self::processComponents($Children);
+		$render = trim($Children);
+	
 		if (!$usePHXEngine) {
             return trim($Children);
         }
 		
-        $render = trim($Children);
         $render = preg_replace('/\[!PHX html\]/', '<!DOCTYPE html>', $render);
         $render = preg_replace('/<!--.*?-->/', '', $render);
-        $render = self::processComponents($render);
         $render = self::convertPHXTags($render);
         $render = preg_replace_callback('/<style\b[^>]*>(.*?)<\/style>/s', function($matches) {
             return "<style>" . trim($matches[1]) . "</style>";

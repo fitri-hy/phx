@@ -73,6 +73,23 @@ USE_PHX_ENGINE=true
 # set to false to use html markup
 ```
 
+**Example PHX Markup**
+```php
+[!PHX html]
+[html lang:'id']
+[head]
+    [meta charset:'UTF-8']
+    [meta name:'viewport' content:'width:device-width, initial-scale:1.0']
+    [title]Page Title[/title]
+[/head]
+[body id:'main' class:'container']
+    [h1]Hello, World![/h1]
+    [p]This is a basic HTML page.[/p]
+    [a class:'hover?text-green-600' href:'https@google.com']Go to link[/a]
+[/body]
+[/html]
+```
+
 ### Use Database
 ```php
 <?php
