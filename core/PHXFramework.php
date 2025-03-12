@@ -9,7 +9,11 @@ class PHXFramework {
             $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
             $dotenv->load();
         }
-		 $useMinify = filter_var($_ENV['USE_MINIFY'], FILTER_VALIDATE_BOOLEAN);
+		$useMinify = filter_var($_ENV['USE_MINIFY'], FILTER_VALIDATE_BOOLEAN);
+		$usePHXEngine = filter_var($_ENV['USE_PHX_ENGINE'], FILTER_VALIDATE_BOOLEAN);
+		if (!$usePHXEngine) {
+            return trim($Children);
+        }
 		
         $render = trim($Children);
         $render = preg_replace('/\[!PHX html\]/', '<!DOCTYPE html>', $render);
@@ -38,6 +42,17 @@ class PHXFramework {
             $url = $matches[2] . '://' . $matches[3];
             return $matches[1] . '="' . $url . (isset($matches[4]) ? $matches[4] : '') . '"';
         }, $content);
+		
+		$content = preg_replace_callback('/class\s*=\s*["\']([^"\']+)["\']/', function($matches) {
+			$replacements = [
+				'?' => ':',
+				'<' => '[',
+				'>' => ']'
+			];
+			$classFixed = strtr($matches[1], $replacements);
+			return 'class="' . $classFixed . '"';
+		}, $content);
+
     
         return $content;
     }
