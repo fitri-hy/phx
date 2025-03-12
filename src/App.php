@@ -20,8 +20,10 @@ class App extends PHXController {
                 [link rel:'stylesheet' href:'/css/style.css']
 				[link rel:'manifest' href='/manifest.json']
             [/head]
-            [body] 
-				$Children
+            [body]
+				[main class:'main-container']
+					$Children
+				[/main]
 				[[PWA]]
 				[script src='/js/app.js'][/script]
 			[/body]
