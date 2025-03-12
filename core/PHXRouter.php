@@ -43,25 +43,58 @@ class PHXRouter {
 
         foreach (self::$routes as $route) {
             if ($route['method'] === $requestMethod && $route['uri'] === $requestUri) {
-                if (!class_exists($route['controller'])) {
-                    self::showNotFound();
-                }
+                return self::dispatch($route);
+            }
 
-                $controller = new $route['controller']();
-                if (!method_exists($controller, $route['action'])) {
-                    self::showNotFound();
-                }
-
-                if (!self::isCsrfValid($requestMethod)) {
-                    self::showNotFound();
-                }
-
-                call_user_func([$controller, $route['action']]);
-                exit;
+            $routePattern = self::convertRouteToPattern($route['uri']);
+            if ($route['method'] === $requestMethod && preg_match($routePattern, $requestUri, $matches)) {
+                array_shift($matches);
+                return self::dispatchWithParams($route, $matches);
             }
         }
 
         self::showNotFound();
+    }
+
+    private static function dispatch($route) {
+        if (!class_exists($route['controller'])) {
+            self::showNotFound();
+        }
+
+        $controller = new $route['controller']();
+        if (!method_exists($controller, $route['action'])) {
+            self::showNotFound();
+        }
+
+        if (!self::isCsrfValid($_SERVER['REQUEST_METHOD'])) {
+            self::showNotFound();
+        }
+
+        call_user_func([$controller, $route['action']]);
+        exit;
+    }
+
+    private static function dispatchWithParams($route, $params) {
+        if (!class_exists($route['controller'])) {
+            self::showNotFound();
+        }
+
+        $controller = new $route['controller']();
+        if (!method_exists($controller, $route['action'])) {
+            self::showNotFound();
+        }
+
+        if (!self::isCsrfValid($_SERVER['REQUEST_METHOD'])) {
+            self::showNotFound();
+        }
+
+        call_user_func_array([$controller, $route['action']], $params);
+        exit;
+    }
+
+    private static function convertRouteToPattern($route) {
+        $route = preg_replace('/:([a-zA-Z0-9_]+)/', '([^/]+)', $route);
+        return "#^$route$#";
     }
 
     private static function isCsrfValid($requestMethod) {
