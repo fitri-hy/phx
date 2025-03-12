@@ -66,6 +66,12 @@ phx_framework/
 ├── package.json
 └── README.md
 ```
+### Use PHX Markup
+```php
+USE_PHX_ENGINE=true
+
+# set to false to use html markup
+```
 
 ### Use Database
 ```php
