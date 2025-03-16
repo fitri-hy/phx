@@ -9,7 +9,7 @@ class App extends PHXController {
         $props = self::Props();
 
         echo PHXFramework::render("
-			<!DOCTYPE html>
+		<!DOCTYPE html>
                 <html lang='en'>
                 <head>
                     <meta charset='UTF-8'>
@@ -24,10 +24,10 @@ class App extends PHXController {
                     <main class='main-container'>
                         $Children
                     </main>
-					[[PWA]]
+					~~PWA~~
                     <script src='/js/app.js'></script>
                 </body>
-			</html>
+		</html>
         ");
     }
 }
