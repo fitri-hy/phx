@@ -61,7 +61,7 @@ class PHXFramework {
     
 
     private static function processComponents($content) {
-        return preg_replace_callback('/\[\[([A-Z][a-zA-Z0-9]+)(.*?)\]\]/s', function ($matches) {
+        return preg_replace_callback('/~~([A-Z][a-zA-Z0-9]+)(.*?)~~/s', function ($matches) {
             $componentName = $matches[1];
             $props = trim($matches[2]);
 
